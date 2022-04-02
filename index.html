@@ -55,6 +55,8 @@
 
 
   <script>
+    let index = null
+
     window.onload = function() {
       const form = document.getElementById('form')
 
@@ -75,21 +77,46 @@
         address
       }
 
-      fetch('/buku-tamu', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-        .then(function(response) {
-          return response.text()
+      if (index != null) {
+        // update
+        fetch('/buku-tamu/' + index, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
         })
-        .then(function(text) {
-          alert(text)
+          .then(function(response) {
+            return response.text()
+          })
+          .then(function(text) {
+            alert(text)
 
-          loadData()
+            loadData()
+          })
+      } else {
+        // create
+        fetch('/buku-tamu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
         })
+          .then(function(response) {
+            return response.text()
+          })
+          .then(function(text) {
+            alert(text)
+
+            loadData()
+          })
+      }
+
+      index = null
+      document.getElementById('name').value = ''
+      document.getElementById('phone').value = ''
+      document.getElementById('address').value = ''
     }
 
     function remove(index) {
@@ -103,6 +130,21 @@
           alert(text)
 
           loadData()
+        })
+    }
+
+    function viewEdit(indexEdit) {
+      fetch('/buku-tamu/' + indexEdit, {
+        method: 'GET'
+      })
+        .then(function(response) {
+          return response.json()
+        })
+        .then(function(data) {
+          index = indexEdit
+          document.getElementById('name').value = data.name
+          document.getElementById('address').value = data.address
+          document.getElementById('phone').value = data.phone
         })
     }
 
@@ -121,6 +163,7 @@
             tableBody.innerHTML += `
               <tr>
                 <td>
+                  <button class='btn btn-warning' onclick='viewEdit(${index})'>Edit</button>
                   <button class='btn btn-danger' onclick='remove(${index})'>Delete</button>
                 </td>
                 <td>${data.name}</td>

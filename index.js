@@ -44,6 +44,18 @@ app.post('/buku-tamu', function(req, res) {
   res.send('Data berhasil disimpan')
 })
 
+app.get('/buku-tamu/:index', function(req, res) {
+  res.json(db[req.params.index])
+})
+
+app.put('/buku-tamu/:index', function(req, res) {
+  const data = req.body
+
+  db[req.params.index] = data
+
+  res.send('Data berhasil diupdate')
+})
+
 app.delete('/buku-tamu/:index', function(req, res) {
   db.splice(req.params.index, 1)
 
